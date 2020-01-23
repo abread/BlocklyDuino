@@ -139,7 +139,9 @@ Blockly.Arduino.finish = function(code) {
   }
 
   // Convert the setups dictionary into a list.
-  var setups = [];
+  var setups = [
+    "Serial.begin("+profile.default.serial+");\n" // make sure it is called before anything else
+  ];
   for (var name in Blockly.Arduino.setups_) {
     setups.push(Blockly.Arduino.setups_[name]);
   }
