@@ -45,6 +45,17 @@ Blockly.Blocks['base_delay'] = {
   }
 };
 
+Blockly.Blocks['base_millis'] = {
+  helpUrl: 'http://arduino.cc/en/Reference/millis',
+  init: function() {
+    this.setColour(120);
+    this.appendDummyInput()
+        .appendField("Uptime")
+    this.setOutput(true, 'Number');
+    this.setTooltip('Returns the number of milliseconds passed since the Arduino board began running the current program.');
+  }
+};
+
 Blockly.Blocks['base_map'] = {
   helpUrl: 'http://arduino.cc/en/Reference/map',
   init: function() {
