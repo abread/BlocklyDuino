@@ -244,7 +244,7 @@ class Gen_compressed(threading.Thread):
 
   def do_compile(self, params, target_filename, filenames, remove):
     # Send the request to Google.
-    params.append(("language", "ECMASCRIPT5"))
+    params.append(("language", "ECMASCRIPT6"))
     headers = {"Content-type": "application/x-www-form-urlencoded"}
     conn = httplib.HTTPSConnection("closure-compiler.appspot.com")
     conn.request("POST", "/compile", urllib.urlencode(params), headers)
@@ -371,7 +371,7 @@ class Gen_langfiles(threading.Thread):
                       ["en.json", "qqq.json", "synonyms.json"]]):
       try:
         subprocess.check_call([
-            "python",
+            "python2",
             os.path.join("i18n", "js_to_json.py"),
             "--input_file", "msg/messages.js",
             "--output_dir", "msg/json/",
@@ -388,7 +388,7 @@ class Gen_langfiles(threading.Thread):
     try:
       # Use create_messages.py to create .js files from .json files.
       cmd = [
-          "python",
+          "python2",
           os.path.join("i18n", "create_messages.py"),
           "--source_lang_file", os.path.join("msg", "json", "en.json"),
           "--source_synonym_file", os.path.join("msg", "json", "synonyms.json"),

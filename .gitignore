@@ -13,3 +13,9 @@ ino_project
 # Python byte-compiled / optimized
 __pycache__/
 *.py[cod]
+
+# build artifacts
+blockly/*_compressed.js
+blockly/*_uncompressed.js
+blockly/msg/json/*
+!blockly/msg/json/.gitkeep

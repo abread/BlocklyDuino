@@ -165,7 +165,7 @@ Blockly.Generator.prototype.blockToCode = function(block) {
   if (goog.isArray(code)) {
     // Value blocks return tuples of code and operator order.
     return [this.scrub_(block, code[0]), code[1]];
-  } else if (goog.isString(code)) {
+  } else if (typeof code == 'string') {
     if (this.STATEMENT_PREFIX) {
       code = this.STATEMENT_PREFIX.replace(/%1/g, '\'' + block.id + '\'') +
           code;
@@ -238,7 +238,7 @@ Blockly.Generator.prototype.valueToCode = function(block, name, order) {
 Blockly.Generator.prototype.statementToCode = function(block, name) {
   var targetBlock = block.getInputTargetBlock(name);
   var code = this.blockToCode(targetBlock);
-  if (!goog.isString(code)) {
+  if (typeof code != 'string') {
     // Value blocks must return code and order of operations info.
     // Statement blocks must only return code.
     throw 'Expecting code from statement block "' + targetBlock.type + '".';
