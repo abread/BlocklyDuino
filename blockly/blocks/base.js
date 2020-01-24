@@ -36,12 +36,13 @@ Blockly.Blocks['base_delay'] = {
   init: function() {
     this.setColour(120);
     this.appendValueInput("DELAY_TIME", 'Number')
-        .appendField("Delay")
+        .appendField("Pausa durante")
         .setCheck('Number');
+    this.appendDummyInput().appendField('ms');
     this.setInputsInline(true);
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
-    this.setTooltip('Delay specific time');
+    this.setTooltip('Pausa execução durante o tempo especificado (em ms)');
   }
 };
 
@@ -61,16 +62,16 @@ Blockly.Blocks['base_map'] = {
   init: function() {
     this.setColour(230);
     this.appendValueInput("NUM", 'Number')
-        .appendField("Map ")
+        .appendField("Mapear ")
         .setCheck('Number');
     this.appendValueInput("DMAX", 'Number')
-        .appendField("value to [0-")
+        .appendField("valor para [0-")
         .setCheck('Number');
     this.appendDummyInput()
 	      .appendField("]");
     this.setInputsInline(true);
     this.setOutput(true);
-    this.setTooltip('Re-maps a number from [0-1024] to another.');
+    this.setTooltip('Re-mapeia um número em [0-1024] para outro.');
   }
 };
 
@@ -79,11 +80,11 @@ Blockly.Blocks['inout_buildin_led'] = {
    init: function() {
      this.setColour(190);
      this.appendDummyInput()
-	       .appendField("Build-in LED Stat")
+	       .appendField("LED do Arduino: estado=")
 	       .appendField(new Blockly.FieldDropdown([["HIGH", "HIGH"], ["LOW", "LOW"]]), "STAT");
      this.setPreviousStatement(true, null);
      this.setNextStatement(true, null);
-     this.setTooltip('light or off the build-in LED');
+     this.setTooltip('Liga/Desliga LED incluído no Arduino');
    }
 };
 
@@ -92,13 +93,13 @@ Blockly.Blocks['inout_digital_write'] = {
   init: function() {
     this.setColour(230);
     this.appendDummyInput()
-	      .appendField("DigitalWrite PIN#")
+	      .appendField("digitalWrite() PIN#")
 	      .appendField(new Blockly.FieldDropdown(profile.default.digital), "PIN")
-      	.appendField("Stat")
+      	.appendField("estado=")
       	.appendField(new Blockly.FieldDropdown([["HIGH", "HIGH"], ["LOW", "LOW"]]), "STAT");
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
-    this.setTooltip('Write digital value to a specific Port');
+    this.setTooltip('Escreve valor digital (0/1) do pino desejado');
   }
 };
 
@@ -107,10 +108,10 @@ Blockly.Blocks['inout_digital_read'] = {
   init: function() {
     this.setColour(230);
     this.appendDummyInput()
-	      .appendField("DigitalRead PIN#")
-	      .appendField(new Blockly.FieldDropdown(profile.default.digital), "PIN");
+        .appendField("digitalRead() PIN#")
+        .appendField(new Blockly.FieldDropdown(profile.default.digital), "PIN");
     this.setOutput(true, 'Boolean');
-    this.setTooltip('');
+    this.setTooltip('Lê estado/valor digital do pino desejado');
   }
 };
 
@@ -119,10 +120,10 @@ Blockly.Blocks['inout_analog_write'] = {
   init: function() {
     this.setColour(230);
     this.appendDummyInput()
-        .appendField("AnalogWrite PIN#")
+        .appendField("analogWrite() PIN#")
         .appendField(new Blockly.FieldDropdown(profile.default.digital), "PIN");
     this.appendValueInput("NUM", 'Number')
-        .appendField("value")
+        .appendField("valor")
         .setCheck('Number');
     this.setInputsInline(true);
     this.setPreviousStatement(true, null);
@@ -136,10 +137,10 @@ Blockly.Blocks['inout_analog_read'] = {
   init: function() {
     this.setColour(230);
     this.appendDummyInput()
-        .appendField("AnalogRead PIN#")
+        .appendField("analogRead() PIN#")
         .appendField(new Blockly.FieldDropdown(profile.default.analog), "PIN");
     this.setOutput(true, 'Number');
-    this.setTooltip('Return value between 0 and 1024');
+    this.setTooltip('lê valor analógico do pino especificado. Retorna valor inteiro entre 0 e 1024 (mapeado de [0-5] Volt)');
   }
 };
 
@@ -148,15 +149,15 @@ Blockly.Blocks['inout_tone'] = {
   init: function() {
     this.setColour(230);
     this.appendDummyInput()
-        .appendField("Tone PIN#")
+        .appendField("Gerar tom em PIN#")
         .appendField(new Blockly.FieldDropdown(profile.default.digital), "PIN");
     this.appendValueInput("NUM", "Number")
-        .appendField("frequency")
+        .appendField("frequência")
         .setCheck("Number");
     this.setInputsInline(true);
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
-    this.setTooltip("Generate audio tones on a pin");
+    this.setTooltip("Gera som no pino (requer buzzer passivo ou similar)");
   }
 };
 
@@ -165,12 +166,12 @@ Blockly.Blocks['inout_notone'] = {
   init: function() {
     this.setColour(230);
     this.appendDummyInput()
-        .appendField("No tone PIN#")
+        .appendField("Pára de gerar tom em PIN#")
         .appendField(new Blockly.FieldDropdown(profile.default.digital), "PIN");
     this.setInputsInline(true);
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
-    this.setTooltip("Stop generating a tone on a pin");
+    this.setTooltip("Pára de gerar som no pino");
   }
 };
 
@@ -228,9 +229,9 @@ Blockly.Blocks['serial_print'] = {
   init: function() {
     this.setColour(230);
     this.appendValueInput("CONTENT", 'String')
-        .appendField("Serial Print");
+        .appendField("Escreve no ecrã e muda de linha");
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
-    this.setTooltip('Prints data to the console/serial port as human-readable ASCII text.');
+    this.setTooltip('Escreve dados na consola/porta de série como texto e caracter de mudança de linha (tudo codificado em ASCII)');
   }
 };
