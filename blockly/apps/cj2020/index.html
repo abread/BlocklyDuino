@@ -2,7 +2,7 @@
 <head>
   <meta charset="utf-8">
   <title>BlocklyDuino CanSat Junior 2020</title>
-  <script type="text/javascript" src="../../blockly_compressed.js"></script>
+  <script type="text/javascript" src="../../blockly_uncompressed.js"></script>
   <script type="text/javascript" src="../../blocks_compressed.js"></script>
   <script type="text/javascript" src="../../arduino_compressed.js"></script>
   <script type="text/javascript" src="../../msg/js/pt.js"></script>
@@ -392,6 +392,25 @@ function init() {
       </block>
       <block type="inout_notone"></block>
       <block type="inout_buildin_led"></block>
+    </category>
+    <category name="Kit CanSat">
+      <block type="cj2020_ds18b20"></block>
+      <block type="cj2020_bmp180"></block>
+      <block type="cj2020_radio_print">
+        <value name="CONTENT">
+          <block type="text">
+            <field name="TEXT"></field>
+          </block>
+        </value>
+      </block>
+      <block type="cj2020_radio_println">
+        <value name="CONTENT">
+          <block type="text">
+            <field name="TEXT"></field>
+          </block>
+        </value>
+      </block>
+      <block type="cj2020_radio_flush"></block>
     </category>
   </xml>
 </body>
