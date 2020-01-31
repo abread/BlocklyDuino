@@ -9,6 +9,7 @@ ino_project
 # Closure library needed for uncompressed development
 /closure-library
 /closure-library-read-only
+closure-compiler.jar
 
 # Python byte-compiled / optimized
 __pycache__/

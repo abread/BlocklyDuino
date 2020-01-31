@@ -1,4 +1,4 @@
-#!/usr/bin/python2.7
+#!/usr/bin/python2
 # Compresses the core Blockly files into a single JavaScript file.
 #
 # Copyright 2012 Google Inc.
@@ -34,14 +34,14 @@
 #   python_compressed.js: The compressed Python generator.
 #   dart_compressed.js: The compressed Dart generator.
 #   msg/js/<LANG>.js for every language <LANG> defined in msg/js/<LANG>.json.
+from __future__ import print_function
 
 import sys
 if sys.version_info[0] != 2:
   raise Exception("Blockly build only compatible with Python 2.x.\n"
                   "You are using: " + sys.version)
 
-import errno, glob, httplib, json, os, re, subprocess, threading, urllib
-
+import errno, glob, os, re, subprocess, threading, tempfile
 
 def import_path(fullpath):
   """Import a file with full path specification.
@@ -165,16 +165,9 @@ class Gen_compressed(threading.Thread):
 
   def gen_core(self):
     target_filename = "blockly_compressed.js"
-    # Define the parameters for the POST request.
     params = [
-        ("compilation_level", "SIMPLE_OPTIMIZATIONS"),
-        ("use_closure_library", "true"),
-        ("output_format", "json"),
-        ("output_info", "compiled_code"),
-        ("output_info", "warnings"),
-        ("output_info", "errors"),
-        ("output_info", "statistics"),
-      ]
+        ("--compilation_level", "SIMPLE"),
+    ]
 
     # Read in all the source files.
     filenames = calcdeps.CalculateDependencies(self.search_paths,
@@ -183,159 +176,76 @@ class Gen_compressed(threading.Thread):
       # Filter out the Closure files (the compiler will add them).
       if filename.startswith(os.pardir + os.sep):  # '../'
         continue
-      f = open(filename)
-      params.append(("js_code", "".join(f.readlines())))
-      f.close()
 
     self.do_compile(params, target_filename, filenames, "")
 
   def gen_blocks(self):
     target_filename = "blocks_compressed.js"
-    # Define the parameters for the POST request.
     params = [
-        ("compilation_level", "SIMPLE_OPTIMIZATIONS"),
-        ("output_format", "json"),
-        ("output_info", "compiled_code"),
-        ("output_info", "warnings"),
-        ("output_info", "errors"),
-        ("output_info", "statistics"),
-      ]
+        ("--compilation_level", "SIMPLE"),
+    ]
 
     # Read in all the source files.
     # Add Blockly.Blocks to be compatible with the compiler.
-    params.append(("js_code", "goog.provide('Blockly.Blocks');"))
-    filenames = glob.glob(os.path.join("blocks", "*.js"))
-    for filename in filenames:
-      f = open(filename)
-      params.append(("js_code", "".join(f.readlines())))
-      f.close()
+    extra_code = "goog.provide('Blockly.Blocks');"
+    filenames = [os.path.join("blocks", "*.js")]
 
     # Remove Blockly.Blocks to be compatible with Blockly.
     remove = "var Blockly={Blocks:{}};"
-    self.do_compile(params, target_filename, filenames, remove)
+    self.do_compile(params, target_filename, filenames, remove, extra_code)
 
   def gen_generator(self, language):
     target_filename = language + "_compressed.js"
-    # Define the parameters for the POST request.
     params = [
-        ("compilation_level", "SIMPLE_OPTIMIZATIONS"),
-        ("output_format", "json"),
-        ("output_info", "compiled_code"),
-        ("output_info", "warnings"),
-        ("output_info", "errors"),
-        ("output_info", "statistics"),
-      ]
+        ("--compilation_level", "SIMPLE"),
+    ]
 
     # Read in all the source files.
     # Add Blockly.Generator to be compatible with the compiler.
-    params.append(("js_code", "goog.provide('Blockly.Generator');"))
-    filenames = glob.glob(
-        os.path.join("generators", language, "*.js"))
-    filenames.insert(0, os.path.join("generators", language + ".js"))
-    for filename in filenames:
-      f = open(filename)
-      params.append(("js_code", "".join(f.readlines())))
-      f.close()
-    filenames.insert(0, "[goog.provide]")
+    extra_code = "goog.provide('Blockly.Generator');"
+    filenames = [
+        os.path.join("generators", language, "*.js"),
+        os.path.join("generators", language + ".js")
+    ]
+    #filenames.insert(0, "[goog.provide]")
 
     # Remove Blockly.Generator to be compatible with Blockly.
     remove = "var Blockly={Generator:{}};"
-    self.do_compile(params, target_filename, filenames, remove)
+    self.do_compile(params, target_filename, filenames, remove, extra_code)
 
-  def do_compile(self, params, target_filename, filenames, remove):
-    # Send the request to Google.
-    params.append(("language", "ECMASCRIPT6"))
-    headers = {"Content-type": "application/x-www-form-urlencoded"}
-    conn = httplib.HTTPSConnection("closure-compiler.appspot.com")
-    conn.request("POST", "/compile", urllib.urlencode(params), headers)
-    response = conn.getresponse()
-    json_str = response.read()
-    conn.close()
+  def do_compile(self, params, target_filename, filenames, remove="", extra_code=""):
+    params.append(("--language_out", "ECMASCRIPT5_STRICT"))
 
-    # Parse the JSON response.
-    json_data = json.loads(json_str)
+    temp = None
+    if len(extra_code) > 0:
+        temp = tempfile.NamedTemporaryFile()
+        temp.write(extra_code)
+        temp.flush()
+        params.append(("--js", temp.name))
 
-    def file_lookup(name):
-      if not name.startswith("Input_"):
-        return "???"
-      n = int(name[6:]) - 1
-      return filenames[n]
+    for f in filenames:
+        params.append(("--js", f))
 
-    if json_data.has_key("serverErrors"):
-      errors = json_data["serverErrors"]
-      for error in errors:
-        print("SERVER ERROR: %s" % target_filename)
-        print(error["error"])
-    elif json_data.has_key("errors"):
-      errors = json_data["errors"]
-      for error in errors:
-        print("FATAL ERROR")
-        print(error["error"])
-        if error["file"]:
-          print("%s at line %d:" % (
-              file_lookup(error["file"]), error["lineno"]))
-          print(error["line"])
-          print((" " * error["charno"]) + "^")
-        sys.exit(1)
-    else:
-      if json_data.has_key("warnings"):
-        warnings = json_data["warnings"]
-        for warning in warnings:
-          print("WARNING")
-          print(warning["warning"])
-          if warning["file"]:
-            print("%s at line %d:" % (
-                file_lookup(warning["file"]), warning["lineno"]))
-            print(warning["line"])
-            print((" " * warning["charno"]) + "^")
-        print()
+    params = [i for tup in params for i in tup] # flatten
+    params.insert(0, "../closure-compiler.jar")
+    params.insert(0, "-jar")
+    params.insert(0, "java")
+    try:
+        out = subprocess.check_output(params)
 
-      if not json_data.has_key("compiledCode"):
-        print("FATAL ERROR: Compiler did not return compiledCode.")
+        out = out.replace(remove, "")
+        with open(target_filename, 'w') as f:
+            f.write(out)
+
+    except (subprocess.CalledProcessError, OSError) as e:
+        print("Error running closure-compiler:", e)
         sys.exit(1)
 
-      code = HEADER + "\n" + json_data["compiledCode"]
-      code = code.replace(remove, "")
+    finally:
+        if temp != None:
+            temp.close()
 
-      # Trim down Google's Apache licences.
-      LICENSE = re.compile("""/\\*
-
- [\w ]+
-
- (Copyright \\d+ Google Inc.)
- https://developers.google.com/blockly/
-
- Licensed under the Apache License, Version 2.0 \(the "License"\);
- you may not use this file except in compliance with the License.
- You may obtain a copy of the License at
-
-   http://www.apache.org/licenses/LICENSE-2.0
-
- Unless required by applicable law or agreed to in writing, software
- distributed under the License is distributed on an "AS IS" BASIS,
- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- See the License for the specific language governing permissions and
- limitations under the License.
-\\*/""")
-      code = re.sub(LICENSE, r"\n// \1  Apache License 2.0", code)
-
-      stats = json_data["statistics"]
-      original_b = stats["originalSize"]
-      compressed_b = stats["compressedSize"]
-      if original_b > 0 and compressed_b > 0:
-        f = open(target_filename, "w")
-        f.write(code)
-        f.close()
-
-        original_kb = int(original_b / 1024 + 0.5)
-        compressed_kb = int(compressed_b / 1024 + 0.5)
-        ratio = int(float(compressed_b) / float(original_b) * 100 + 0.5)
-        print("SUCCESS: " + target_filename)
-        print("Size changed from %d KB to %d KB (%d%%)." % (
-            original_kb, compressed_kb, ratio))
-      else:
-        print("UNKNOWN ERROR")
-
+    print("SUCCESS:", target_filename)
 
 class Gen_langfiles(threading.Thread):
   """Generate JavaScript file for each natural language supported.
