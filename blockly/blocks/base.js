@@ -229,6 +229,18 @@ Blockly.Blocks['serial_print'] = {
   init: function() {
     this.setColour(230);
     this.appendValueInput("CONTENT", 'String')
+        .appendField("Escreve no ecrã");
+    this.setPreviousStatement(true, null);
+    this.setNextStatement(true, null);
+    this.setTooltip('Escreve dados na consola/porta de série como texto (codificado em ASCII)');
+  }
+};
+
+Blockly.Blocks['serial_println'] = {
+  helpUrl: 'http://www.arduino.cc/en/Serial/Println',
+  init: function() {
+    this.setColour(230);
+    this.appendValueInput("CONTENT", 'String')
         .appendField("Escreve no ecrã e muda de linha");
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
