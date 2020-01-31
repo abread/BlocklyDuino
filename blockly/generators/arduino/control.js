@@ -91,6 +91,9 @@ Blockly.Arduino.controls_repeat = function() {
         '\'' + this.id + '\'') + branch;
   }
 
+  if (argument1 == '-1')
+    return '';
+
   return generate_for_loop(variable0, argument0, argument1, branch, 'int');
 }
 
