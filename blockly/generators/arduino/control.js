@@ -28,25 +28,13 @@ goog.provide('Blockly.Arduino.loops');
 goog.require('Blockly.Arduino');
 
 
-Blockly.Arduino.controls_for = function() {
-  // For loop.
-  var variable0 = Blockly.Arduino.variableDB_.getName(
-      this.getFieldValue('VAR'), Blockly.Variables.NAME_TYPE);
-  var argument0 = Blockly.Arduino.valueToCode(this, 'FROM',
-      Blockly.Arduino.ORDER_ASSIGNMENT) || '0';
-  var argument1 = Blockly.Arduino.valueToCode(this, 'TO',
-      Blockly.Arduino.ORDER_ASSIGNMENT) || '0';
-  var branch = Blockly.Arduino.statementToCode(this, 'DO');
-  if (Blockly.Arduino.INFINITE_LOOP_TRAP) {
-    branch = Blockly.Arduino.INFINITE_LOOP_TRAP.replace(/%1/g,
-        '\'' + this.id + '\'') + branch;
-  }
+function generate_for_loop(variable0, argument0, argument1, branch, varType = '') {
   var code;
   if (argument0.match(/^-?\d+(\.\d+)?$/) &&
       argument1.match(/^-?\d+(\.\d+)?$/)) {
     // Both arguments are simple numbers.
     var up = parseFloat(argument0) <= parseFloat(argument1);
-    code = 'for (' + variable0 + ' = ' + argument0 + '; ' +
+    code = 'for (' + varType + ' ' + variable0 + ' = ' + argument0 + '; ' +
         variable0 + (up ? ' <= ' : ' >= ') + argument1 + '; ' +
         variable0 + (up ? '++' : '--') + ') {\n' +
         branch + '}\n';
@@ -65,7 +53,7 @@ Blockly.Arduino.controls_for = function() {
           variable0 + '_end', Blockly.Variables.NAME_TYPE);
       code += 'int ' + endVar + ' = ' + argument1 + ';\n';
     }
-    code += 'for (' + variable0 + ' = ' + startVar + ';\n' +
+    code += 'for (' + varType + ' ' + variable0 + ' = ' + startVar + ';\n' +
         '    (' + startVar + ' <= ' + endVar + ') ? ' +
         variable0 + ' <= ' + endVar + ' : ' +
         variable0 + ' >= ' + endVar + ';\n' +
@@ -74,7 +62,37 @@ Blockly.Arduino.controls_for = function() {
         branch + '}\n';
   }
   return code;
+}
+
+Blockly.Arduino.controls_for = function() {
+  // For loop.
+  var variable0 = Blockly.Arduino.variableDB_.getName(
+      this.getFieldValue('VAR'), Blockly.Variables.NAME_TYPE);
+  var argument0 = Blockly.Arduino.valueToCode(this, 'FROM',
+      Blockly.Arduino.ORDER_ASSIGNMENT) || '0';
+  var argument1 = Blockly.Arduino.valueToCode(this, 'TO',
+      Blockly.Arduino.ORDER_ASSIGNMENT) || '0';
+  var branch = Blockly.Arduino.statementToCode(this, 'DO');
+  if (Blockly.Arduino.INFINITE_LOOP_TRAP) {
+    branch = Blockly.Arduino.INFINITE_LOOP_TRAP.replace(/%1/g,
+        '\'' + this.id + '\'') + branch;
+  }
+
+  return generate_for_loop(variable0, argument0, argument1, branch);
 };
+
+Blockly.Arduino.controls_repeat = function() {
+  var variable0 = Blockly.Arduino.variableDB_.getDistinctName('i', Blockly.Variables.NAME_TYPE);
+  var argument0 = '0';
+  var argument1 = ''+(this.getFieldValue('TIMES') - 1);
+  var branch = Blockly.Arduino.statementToCode(this, 'DO');
+  if (Blockly.Arduino.INFINITE_LOOP_TRAP) {
+    branch = Blockly.Arduino.INFINITE_LOOP_TRAP.replace(/%1/g,
+        '\'' + this.id + '\'') + branch;
+  }
+
+  return generate_for_loop(variable0, argument0, argument1, branch, 'int');
+}
 
 Blockly.Arduino.controls_whileUntil = function() {
   // Do while/until loop.
@@ -92,3 +110,14 @@ Blockly.Arduino.controls_whileUntil = function() {
   }
   return 'while (' + argument0 + ') {\n' + branch + '}\n';
 }
+
+Blockly.Arduino.controls_flow_statements = function() {
+	const op = this.getFieldValue('FLOW');
+	if (op == 'BREAK') {
+		return 'break;\n';
+	} else if (op == 'CONTINUE') {
+		return 'continue;\n';
+	} else {
+		return 'OPERATOR NOT IMPLEMENTED: '+op+';\n';
+	}
+};
