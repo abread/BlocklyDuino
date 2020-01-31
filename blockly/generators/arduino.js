@@ -43,7 +43,7 @@ Blockly.Arduino = new Blockly.Generator('Arduino');
  */
 Blockly.Arduino.addReservedWords(
   // http://arduino.cc/en/Reference/HomePage
-  'setup,loop,if,else,for,switch,case,while,do,break,continue,return,goto,define,include,HIGH,LOW,INPUT,OUTPUT,INPUT_PULLUP,true,false,interger, constants,floating,point,void,bookean,char,unsigned,byte,int,word,long,float,double,string,String,array,static, volatile,const,sizeof,pinMode,digitalWrite,digitalRead,analogReference,analogRead,analogWrite,tone,noTone,shiftOut,shitIn,pulseIn,millis,micros,delay,delayMicroseconds,min,max,abs,constrain,map,pow,sqrt,sin,cos,tan,randomSeed,random,lowByte,highByte,bitRead,bitWrite,bitSet,bitClear,bit,attachInterrupt,detachInterrupt,interrupts,noInterrupts'
+  'setup,loop,if,else,for,switch,case,while,do,break,continue,return,goto,define,include,HIGH,LOW,INPUT,OUTPUT,INPUT_PULLUP,true,false,interger, constants,floating,point,void,bookean,char,unsigned,byte,int,word,long,float,double,string,String,array,static, volatile,const,sizeof,pinMode,digitalWrite,digitalRead,analogReference,analogRead,analogWrite,tone,noTone,shiftOut,shitIn,pulseIn,millis,micros,delay,delayMicroseconds,min,max,abs,constrain,map,pow,sqrt,sin,cos,tan,randomSeed,random,lowByte,highByte,bitRead,bitWrite,bitSet,bitClear,bit,attachInterrupt,detachInterrupt,interrupts,noInterrupts,Print,Serial,Serial1,TEMPERATURE_PIN,Temperature,temperature,Pressure,pressure,MIN,MAX,RADIO_SS_PIN,RADIO_IRQ_PIN,RADIO_FREQUENCY,RADIO_NET_ID,RADIO_NODE_ID,RADIO_GROUNDSTATION_NODE_ID,RADIO_ATC_RSSI,RADIO_SEND_RETRIES,RADIO_SEND_ACK_TIMEOUT,RADIO_MAX_BUFFER_SIZE,StreamedRFM,radio'
 );
 
 /**
