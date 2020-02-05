@@ -165,17 +165,24 @@ public:
   Blockly.Arduino.setups_['cj2020_radio_setup'] = 'radio.setup();\n';
 }
 
+Blockly.Arduino.cj2020_radio_setfreq = function() {
+  cj2020_radio_requirements();
+
+  const freq = Blockly.Arduino.valueToCode(this, 'FREQ', Blockly.Arduino.ORDER_ATOMIC) || 'ERRO A OBTER FREQUENCIA';
+  return `radio.setFrequency(${freq});\n`
+}
+
 Blockly.Arduino.cj2020_radio_print = function() {
   cj2020_radio_requirements();
 
-  const content = Blockly.Arduino.valueToCode(this, 'CONTENT', Blockly.Arduino.ORDER_ATOMIC) || '0';
+  const content = Blockly.Arduino.valueToCode(this, 'CONTENT', Blockly.Arduino.ORDER_ATOMIC) || 'ERRO A OBTER VALOR';
   return `radio.print(${content});\n`;
 };
 
 Blockly.Arduino.cj2020_radio_println = function() {
   cj2020_radio_requirements();
 
-  const content = Blockly.Arduino.valueToCode(this, 'CONTENT', Blockly.Arduino.ORDER_ATOMIC) || '0';
+  const content = Blockly.Arduino.valueToCode(this, 'CONTENT', Blockly.Arduino.ORDER_ATOMIC) || 'ERRO A OBTER VALOR';
   return `radio.println(${content});\n`;
 };
 

@@ -22,6 +22,20 @@ Blockly.Blocks['cj2020_bmp180'] = {
   }
 };
 
+Blockly.Blocks['cj2020_radio_setfreq'] = {
+  init: function() {
+    this.setColour(230);
+    this.appendValueInput("FREQ", "Number")
+        .appendField("Rádio: definir frequência para ")
+        .setCheck("Number");
+    this.appendDummyInput().appendField("Hz");
+    this.setInputsInline(true);
+    this.setPreviousStatement(true, null);
+    this.setNextStatement(true, null);
+    this.setTooltip("Define frequência base do rádio para o valor especificado em Hz");
+  }
+};
+
 Blockly.Blocks['cj2020_radio_print'] = {
   init: function() {
     this.setColour(230);
