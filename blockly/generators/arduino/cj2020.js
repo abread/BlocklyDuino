@@ -104,6 +104,10 @@ public:
     _radio.setFrequency(RADIO_FREQUENCY);
   }
 
+  void setFrequency(uint32_t freq) {
+    _radio.setFrequency(freq);
+  }
+
   int buffer_space() {
     return RADIO_MAX_BUFFER_SIZE - _buffer_len;
   }
