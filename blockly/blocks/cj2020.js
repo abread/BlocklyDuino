@@ -22,13 +22,21 @@ Blockly.Blocks['cj2020_bmp180'] = {
   }
 };
 
+function freq_validator(text) {
+	const n = Number(text);
+	if (Number.isInteger(n) && Number(n) >= 424000000 && Number(n) <= 510000000) {
+		return String(n);
+	}
+	return null;
+}
+
 Blockly.Blocks['cj2020_radio_setfreq'] = {
   init: function() {
     this.setColour(230);
-    this.appendValueInput("FREQ", "Number")
-        .appendField("Rádio: definir frequência para ")
-        .setCheck("Number");
-    this.appendDummyInput().appendField("Hz");
+    this.appendDummyInput()
+        .appendField("Rádio: definir frequência para")
+        .appendField(new Blockly.FieldTextInput("433000000", freq_validator), "FREQ")
+        .appendField("Hz");
     this.setInputsInline(true);
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);

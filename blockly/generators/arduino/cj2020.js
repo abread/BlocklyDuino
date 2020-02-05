@@ -172,7 +172,7 @@ public:
 Blockly.Arduino.cj2020_radio_setfreq = function() {
   cj2020_radio_requirements();
 
-  const freq = Blockly.Arduino.valueToCode(this, 'FREQ', Blockly.Arduino.ORDER_ATOMIC) || 'ERRO A OBTER FREQUENCIA';
+  const freq = this.getFieldValue('FREQ');
   return `radio.setFrequency(${freq});\n`
 }
 
