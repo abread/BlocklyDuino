@@ -35,7 +35,7 @@ function restore_blocks() {
 * Save Arduino generated code to local file.
 */
 function saveCode() {
-  var fileName = window.prompt('What would you like to name your file?', 'BlocklyDuino')
+  var fileName = window.prompt('Que nome queres dar ao ficheiro?', 'BlocklyDuino')
   //doesn't save if the user quits the save prompt
   if(fileName){
     var blob = new Blob([Blockly.Arduino.workspaceToCode()], {type: 'text/plain;charset=utf-8'});
@@ -50,7 +50,7 @@ function saveCode() {
 function save() {
   var xml = Blockly.Xml.workspaceToDom(Blockly.mainWorkspace);
   var data = Blockly.Xml.domToText(xml);
-  var fileName = window.prompt('What would you like to name your file?', 'BlocklyDuino');
+  var fileName = window.prompt('Que nome queres dar ao ficheiro?', 'BlocklyDuino');
   // Store data in blob.
   // var builder = new BlobBuilder();
   // builder.append(data);
@@ -58,7 +58,7 @@ function save() {
   if(fileName){
     var blob = new Blob([data], {type: 'text/xml'});
     saveAs(blob, fileName + ".xml");
-  } 
+  }
 }
 
 /**
@@ -80,11 +80,11 @@ function load(event) {
       try {
         var xml = Blockly.Xml.textToDom(target.result);
       } catch (e) {
-        alert('Error parsing XML:\n' + e);
+        alert('Erro a carregar XML:\n' + e);
         return;
       }
       var count = Blockly.mainWorkspace.getAllBlocks().length;
-      if (count && confirm('Replace existing blocks?\n"Cancel" will merge.')) {
+      if (count && confirm('Substituir blocos atuais?\n"Cancelar" vai tentar juntar ambos.')) {
         Blockly.mainWorkspace.clear();
       }
       Blockly.Xml.domToWorkspace(Blockly.mainWorkspace, xml);
@@ -101,7 +101,7 @@ function load(event) {
  */
 function discard() {
   var count = Blockly.mainWorkspace.getAllBlocks().length;
-  if (count < 2 || window.confirm('Delete all ' + count + ' blocks?')) {
+  if (count < 2 || window.confirm('Apagar todos os ' + count + ' blocos?')) {
     Blockly.mainWorkspace.clear();
     renderContent();
   }
@@ -168,16 +168,16 @@ function onSuccess() {
       try {
       var xml = Blockly.Xml.textToDom(ajax.responseText);
       } catch (e) {
-        alert('Error parsing XML:\n' + e);
+        alert('Erro a carregar XML:\n' + e);
         return;
       }
       var count = Blockly.mainWorkspace.getAllBlocks().length;
-      if (count && confirm('Replace existing blocks?\n"Cancel" will merge.')) {
+      if (count && confirm('Substituir blocos atuais?\n"Cancelar" vai tentar juntá-los.')) {
         Blockly.mainWorkspace.clear();
       }
       Blockly.Xml.domToWorkspace(Blockly.mainWorkspace, xml);
     } else {
-      alert("Server error");
+      alert("Erro do servidor");
     }
   }
 }
@@ -209,14 +209,14 @@ function uploadCode(code, callback) {
     var async = true;
 
     var request = new XMLHttpRequest();
-    
+
     request.onreadystatechange = function() {
-        if (request.readyState != 4) { 
-            return; 
+        if (request.readyState != 4) {
+            return;
         }
-        
+
         spinner.stop();
-        
+
         var status = parseInt(request.status); // HTTP response status, e.g., 200 for "200 OK"
         var errorInfo = null;
         switch (status) {
@@ -238,20 +238,20 @@ function uploadCode(code, callback) {
             errorInfo = "code " + status + "\n\nUnknown error.";
             break;
         };
-        
+
         callback(status, errorInfo);
     };
 
     request.open(method, url, async);
     request.setRequestHeader("Content-Type", "text/plain;charset=UTF-8");
-    request.send(code);	     
+    request.send(code);
 }
 
 function uploadClick() {
     var code = Blockly.Arduino.workspaceToCode();
 
     alert("Ready to upload to Arduino.");
-    
+
     uploadCode(code, function(status, errorInfo) {
         if (status == 200) {
             alert("Program uploaded ok");

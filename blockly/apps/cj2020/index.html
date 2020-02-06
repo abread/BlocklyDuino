@@ -34,7 +34,7 @@ function tabClick(clickedName) {
       xmlDom = Blockly.Xml.textToDom(xmlText);
     } catch (e) {
       var q =
-          window.confirm('Error parsing XML:\n' + e + '\n\nAbandon changes?');
+          window.confirm('Erro ao carregar XML:\n' + e + '\n\nDescartar alterações?');
       if (!q) {
         // Leave the user on the XML tab.
         return;
@@ -278,14 +278,14 @@ function init() {
   <table height="100%" width="100%">
     <tr>
       <td>
-        <h1><a href="https://github.com/gasolin/BlocklyDuino/wiki">BlocklyDuino</a> &gt; web-based visual programming editor for arduino</h1>
+        <h1><a href="https://github.com/abread/BlocklyDuino">BlocklyDuino</a> &gt; editor visual de código para Arduino</h1>
       </td>
     </tr>
     <tr>
       <td>
         <table width="100%">
           <tr id="tabRow" height="1em">
-            <td id="tab_blocks" class="tabon" onclick="tabClick('blocks')">Blocks</td>
+            <td id="tab_blocks" class="tabon" onclick="tabClick('blocks')">Blocos</td>
             <td class="tabmin">&nbsp;</td>
             <!--td id="tab_javascript" class="taboff" onclick="tabClick(this.id)">JavaScript</td>
             <td class="tabmin">&nbsp;</td-->
