@@ -51,9 +51,9 @@ Blockly.Blocks['base_millis'] = {
   init: function() {
     this.setColour(120);
     this.appendDummyInput()
-        .appendField("Uptime")
+        .appendField("Tempo ativo")
     this.setOutput(true, 'Number');
-    this.setTooltip('Returns the number of milliseconds passed since the Arduino board began running the current program.');
+    this.setTooltip('Retorna o número de milissegundos que passou desde que o Arduino começou a executar o programa atual.');
   }
 };
 
@@ -71,7 +71,7 @@ Blockly.Blocks['base_map'] = {
 	      .appendField("]");
     this.setInputsInline(true);
     this.setOutput(true);
-    this.setTooltip('Re-mapeia um número em [0-1024] para outro.');
+    this.setTooltip('Re-mapeia um número em [0-1024] para outro no intervalo especificado.');
   }
 };
 
