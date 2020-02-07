@@ -49,7 +49,7 @@ Blockly.Blocks['base_delay'] = {
 Blockly.Blocks['base_millis'] = {
   helpUrl: 'http://arduino.cc/en/Reference/millis',
   init: function() {
-    this.setColour(120);
+    this.setColour(230);
     this.appendDummyInput()
         .appendField("Tempo ativo")
     this.setOutput(true, 'Number');
