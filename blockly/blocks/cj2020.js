@@ -4,7 +4,7 @@ goog.require('Blockly.Blocks');
 
 Blockly.Blocks['cj2020_ds18b20'] = {
   init: function() {
-    this.setColour(10);
+    this.setColour(230);
     this.appendDummyInput()
         .appendField("Lê temperatura (DS18B20)");
     this.setOutput(true, 'Number');
@@ -14,7 +14,7 @@ Blockly.Blocks['cj2020_ds18b20'] = {
 
 Blockly.Blocks['cj2020_bmp180'] = {
   init: function() {
-    this.setColour(10);
+    this.setColour(230);
     this.appendDummyInput()
         .appendField("Ler pressão (BMP180)");
     this.setOutput(true, 'Number');
