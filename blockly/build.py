@@ -1,4 +1,4 @@
-#!/usr/bin/python2
+#!/usr/bin/env python2
 # Compresses the core Blockly files into a single JavaScript file.
 #
 # Copyright 2012 Google Inc.
