@@ -112,13 +112,10 @@ Blockly.Arduino.definitions_['cj2020_radio_define'] = `
 
 #define RADIO_SS_PIN 10
 #define RADIO_IRQ_PIN 5
-#define RADIO_FREQUENCY 433000000 // Hz
 #define RADIO_NET_ID 100 // 0-255, must be the same on all nodes
 #define RADIO_NODE_ID 2 // 0-254, must be unique in network, 255=broadcast
 #define RADIO_GROUNDSTATION_NODE_ID 1 // same as above, the ground station
 #define RADIO_ATC_RSSI -80
-#define RADIO_SEND_RETRIES 2
-#define RADIO_SEND_ACK_TIMEOUT 100 // in ms. TODO: calculate RTT+L/R for typical packet size (L) and 1km distance
 #define RADIO_MAX_BUFFER_SIZE 61 // library limitation
 class StreamedRFM : public Print {
   RFM69_ATC _radio = RFM69_ATC(RADIO_SS_PIN, RADIO_IRQ_PIN);
@@ -132,7 +129,6 @@ public:
     _radio.setHighPower();
     _radio.encrypt(null);
     _radio.enableAutoPower(RADIO_ATC_RSSI);
-    _radio.setFrequency(RADIO_FREQUENCY);
   }
 
   void setFrequency(uint32_t freq) {
@@ -150,7 +146,7 @@ public:
 
     Serial.print("saída rádio: ");
     Serial.println((char*) _buffer);
-    if(! _radio.sendWithRetry(RADIO_GROUNDSTATION_NODE_ID, _buffer, _buffer_len, RADIO_SEND_RETRIES, RADIO_SEND_ACK_TIMEOUT)) {
+    if(! _radio.send(RADIO_GROUNDSTATION_NODE_ID, _buffer, _buffer_len)) {
       Serial.println("Envio falhou, dados em buffer descartados");
     }
 
