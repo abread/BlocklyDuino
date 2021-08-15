@@ -58,7 +58,7 @@ Blockly.Blocks['cj2020_bmp180'] = {
   init: function() {
     this.setColour(230);
     this.appendDummyInput()
-        .appendField("Ler pressão (BMP180)");
+        .appendField("BMP180: Ler pressão");
     this.setOutput(true, 'Number');
     this.setTooltip('devolve pressão em Pa');
   }
@@ -101,7 +101,7 @@ Blockly.Blocks['cj2020_radio_println'] = {
   init: function() {
     this.setColour(230);
     this.appendValueInput("CONTENT", "String")
-        .appendField("Rádio: escreve e muda de linha ")
+        .appendField("Rádio: escreve e muda de linha")
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
     this.setTooltip('Escreve dados para enviar no rádio como texto (codificado em ASCII) e um caracter de mudança de linha no fim');
@@ -111,9 +111,9 @@ Blockly.Blocks['cj2020_radio_println'] = {
 Blockly.Blocks['cj2020_radio_flush'] = {
   init: function() {
     this.setColour(230);
-    this.appendDummyInput().appendField("Rádio: flush()");
+    this.appendDummyInput().appendField("Rádio: forçar envio");
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
-    this.setTooltip('Força o envio quaisquer dados ainda no buffer do rádio');
+    this.setTooltip('Força o envio quaisquer dados ainda no buffer do rádio (flush)');
   }
 };
