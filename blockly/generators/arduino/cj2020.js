@@ -3,7 +3,7 @@ goog.provide('Blockly.Arduino.cj2020');
 goog.require('Blockly.Arduino');
 
 
-Blockly.Arduino.cj2020_ds18b20 = function() {
+function cj2020_ds18b20_requirements() {
   Blockly.Arduino.definitions_['define_cj2020_ds18b20'] = `
 #include <OneWire.h>
 #include <DallasTemperature.h>
@@ -11,11 +11,16 @@ Blockly.Arduino.cj2020_ds18b20 = function() {
 #define TEMPERATURE_PIN 4
 
 class Temperature {
+private:
   OneWire _bus = OneWire(TEMPERATURE_PIN);
   DallasTemperature _sensors = DallasTemperature(&_bus);
+  uint8_t _resolution = 9;
+
 public:
   void setup() {
     _sensors.begin();
+    _sensors.setWaitForConversion(false);
+    _sensors.setResolution(_resolution);
 
     if (_sensors.getDeviceCount() != 1) {
       Serial.print("Detetados ");
@@ -24,9 +29,18 @@ public:
     }
   }
 
-  double read() {
+  void setResolution(uint8_t res) {
+    _sensors.setResolution(res);
+    _resolution = res;
+  }
+
+  void requestTemperatures() {
     _sensors.requestTemperatures();
-    return _sensors.getTempCByIndex(0);
+  }
+
+  double getTemperatureForIndex(uint8_t idx) {
+    _sensors.blockTillConversionComplete(_resolution);
+    return _sensors.getTempCByIndex(idx);
   }
 } temperature;
 `;
@@ -34,8 +48,25 @@ public:
   Blockly.Arduino.setups_['setup_cj2020_ds18b20'] = `
 temperature.setup();
 `
+}
 
-  return [`temperature.read()`, Blockly.Arduino.ORDER_ATOMIC];
+Blockly.Arduino.cj2020_ds18b20_requestTemperatures = function() {
+  cj2020_ds18b20_requirements();
+  return [`temperature.requestTemperatures()`, Blockly.Arduino.ORDER_ATOMIC];
+};
+
+Blockly.Arduino.cj2020_ds18b20_getTemperatureForIndex = function() {
+  cj2020_ds18b20_requirements();
+
+  const idx = this.getFieldValue('INDEX');
+  return `temperature.getTemperatureForIndex(${idx});\n`;
+};
+
+Blockly.Arduino.cj2020_ds18b20_setResolution = function() {
+  cj2020_ds18b20_requirements();
+
+  const res = this.getFieldValue('RESOLUTION');
+  return `temperature.setResolution(${res});\n`;
 };
 
 Blockly.Arduino.cj2020_bmp180 = function() {

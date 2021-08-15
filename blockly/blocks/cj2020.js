@@ -2,13 +2,55 @@ goog.provide('Blockly.Blocks.cj2020');
 
 goog.require('Blockly.Blocks');
 
-Blockly.Blocks['cj2020_ds18b20'] = {
+Blockly.Blocks['cj2020_ds18b20_requestTemperatures'] = {
   init: function() {
     this.setColour(230);
     this.appendDummyInput()
-        .appendField("Lê temperatura (DS18B20)");
+        .appendField("DS18B20: Pedir medição de temperatura");
+    this.setInputsInline(true);
+    this.setPreviousStatement(true, null);
+    this.setNextStatement(true, null);
+    this.setTooltip('inicia medição de temperatura em todos os DS18B20 ligados');
+  }
+};
+
+function idx_validator(text) {
+	const n = Number(text);
+	if (Number.isInteger(n) && Number(n) >= 0) {
+		return String(n);
+	}
+	return null;
+}
+
+function ds18b20_resolution_validator(text) {
+	if (text == '9' || text == '10' || text == '11' || text == '12') {
+		return text;
+	}
+	return null;
+}
+
+Blockly.Blocks['cj2020_ds18b20_getTemperatureForIndex'] = {
+  init: function() {
+    this.setColour(230);
+    this.appendDummyInput()
+        .appendField("DS18B20: Obter temperatura do sensor #")
+        .appendField(new Blockly.FieldTextInput("0", idx_validator), "INDEX");
     this.setOutput(true, 'Number');
     this.setTooltip('devolve temperatura em ºC');
+  }
+};
+
+Blockly.Blocks['cj2020_ds18b20_setResolution'] = {
+  init: function() {
+    this.setColour(230);
+    this.appendDummyInput()
+        .appendField("DS18B20: Definir resolução para")
+        .appendField(new Blockly.FieldTextInput("9", ds18b20_resolution_validator), "RESOLUTION")
+        .appendField("bits");
+    this.setInputsInline(true);
+    this.setPreviousStatement(true, null);
+    this.setNextStatement(true, null);
+    this.setTooltip('define resolução de todos os DS18B20 ligados (9, 10, 11 ou 12 bits)');
   }
 };
 
