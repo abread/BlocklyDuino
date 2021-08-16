@@ -82,7 +82,7 @@ Blockly.Arduino.cj2020_ds18b20 = function() {
       return temperature.getTemperatureForIndex(0);
     }
   `;
-  return [`ds18b20_legacy_read(&temperature)`, Blockly.Arduino.ORDER_ATOMIC];
+  return [`ds18b20_legacy_read(temperature)`, Blockly.Arduino.ORDER_ATOMIC];
 };
 
 Blockly.Arduino.cj2020_ds18b20_requestTemperatures = function() {
