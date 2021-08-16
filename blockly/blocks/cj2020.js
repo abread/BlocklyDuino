@@ -2,6 +2,16 @@ goog.provide('Blockly.Blocks.cj2020');
 
 goog.require('Blockly.Blocks');
 
+Blockly.Blocks['cj2020_ds18b20'] = {
+  init: function() {
+    this.setColour(230);
+    this.appendDummyInput()
+        .appendField("DS18B20: Pedir medição e obter temperatura do sensor #0");
+    this.setOutput(true, 'Number');
+    this.setTooltip('inicia medição de temperatura em todos os DS18B20 ligados e obtém leitura do sensor #0');
+  }
+};
+
 Blockly.Blocks['cj2020_ds18b20_requestTemperatures'] = {
   init: function() {
     this.setColour(230);

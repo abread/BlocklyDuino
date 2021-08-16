@@ -2,7 +2,6 @@ goog.provide('Blockly.Arduino.cj2020');
 
 goog.require('Blockly.Arduino');
 
-
 function cj2020_ds18b20_requirements() {
   Blockly.Arduino.definitions_['define_cj2020_ds18b20'] = `
 #include <OneWire.h>
@@ -49,6 +48,17 @@ public:
 temperature.setup();
 `
 }
+
+Blockly.Arduino.cj2020_ds18b20 = function() {
+  cj2020_ds18b20_requirements();
+  Blockly.Arduino.definitions_['define_cj2020_ds18b20_legacy'] = `
+    double ds18b20_legacy_read(Temperature& temperature) {
+      temperature.requestTemperatures();
+      return temperature.getTemperatureForIndex(0);
+    }
+  `;
+  return [`ds18b20_legacy_read(&temperature)`, Blockly.Arduino.ORDER_ATOMIC];
+};
 
 Blockly.Arduino.cj2020_ds18b20_requestTemperatures = function() {
   cj2020_ds18b20_requirements();
