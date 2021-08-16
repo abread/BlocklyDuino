@@ -4,7 +4,7 @@ goog.require('Blockly.Blocks');
 
 Blockly.Blocks['cj2020_ds18b20'] = {
   init: function() {
-    this.setColour(230);
+    this.setColour(190);
     this.appendDummyInput()
         .appendField("DS18B20: Pedir medição e obter temperatura do sensor #0");
     this.setOutput(true, 'Number');
@@ -14,7 +14,7 @@ Blockly.Blocks['cj2020_ds18b20'] = {
 
 Blockly.Blocks['cj2020_ds18b20_requestTemperatures'] = {
   init: function() {
-    this.setColour(230);
+    this.setColour(190);
     this.appendDummyInput()
         .appendField("DS18B20: Pedir medição de temperatura");
     this.setInputsInline(true);
@@ -41,7 +41,7 @@ function ds18b20_resolution_validator(text) {
 
 Blockly.Blocks['cj2020_ds18b20_getTemperatureForIndex'] = {
   init: function() {
-    this.setColour(230);
+    this.setColour(190);
     this.appendDummyInput()
         .appendField("DS18B20: Obter temperatura do sensor #")
         .appendField(new Blockly.FieldTextInput("0", idx_validator), "INDEX");
@@ -52,7 +52,7 @@ Blockly.Blocks['cj2020_ds18b20_getTemperatureForIndex'] = {
 
 Blockly.Blocks['cj2020_ds18b20_setResolution'] = {
   init: function() {
-    this.setColour(230);
+    this.setColour(190);
     this.appendDummyInput()
         .appendField("DS18B20: Definir resolução para")
         .appendField(new Blockly.FieldTextInput("9", ds18b20_resolution_validator), "RESOLUTION")
@@ -66,7 +66,7 @@ Blockly.Blocks['cj2020_ds18b20_setResolution'] = {
 
 Blockly.Blocks['cj2020_dht11_readTemperature'] = {
   init: function() {
-    this.setColour(230);
+    this.setColour(190);
     this.appendDummyInput()
         .appendField("DHT11: Ler temperatura");
     this.setOutput(true, 'Number');
@@ -76,7 +76,7 @@ Blockly.Blocks['cj2020_dht11_readTemperature'] = {
 
 Blockly.Blocks['cj2020_dht11_readRelHumidity'] = {
   init: function() {
-    this.setColour(230);
+    this.setColour(190);
     this.appendDummyInput()
         .appendField("DHT11: Ler humidade relativa");
     this.setOutput(true, 'Number');
@@ -86,7 +86,7 @@ Blockly.Blocks['cj2020_dht11_readRelHumidity'] = {
 
 Blockly.Blocks['cj2020_bmp180'] = {
   init: function() {
-    this.setColour(230);
+    this.setColour(190);
     this.appendDummyInput()
         .appendField("BMP180: Ler pressão");
     this.setOutput(true, 'Number');
@@ -104,7 +104,7 @@ function freq_validator(text) {
 
 Blockly.Blocks['cj2020_radio_setfreq'] = {
   init: function() {
-    this.setColour(230);
+    this.setColour(190);
     this.appendDummyInput()
         .appendField("Rádio: definir frequência para")
         .appendField(new Blockly.FieldTextInput("433000000", freq_validator), "FREQ")
@@ -118,7 +118,7 @@ Blockly.Blocks['cj2020_radio_setfreq'] = {
 
 Blockly.Blocks['cj2020_radio_print'] = {
   init: function() {
-    this.setColour(230);
+    this.setColour(190);
     this.appendValueInput("CONTENT", "String")
         .appendField("Rádio: escreve")
     this.setPreviousStatement(true, null);
@@ -129,7 +129,7 @@ Blockly.Blocks['cj2020_radio_print'] = {
 
 Blockly.Blocks['cj2020_radio_println'] = {
   init: function() {
-    this.setColour(230);
+    this.setColour(190);
     this.appendValueInput("CONTENT", "String")
         .appendField("Rádio: escreve e muda de linha")
     this.setPreviousStatement(true, null);
@@ -140,7 +140,7 @@ Blockly.Blocks['cj2020_radio_println'] = {
 
 Blockly.Blocks['cj2020_radio_flush'] = {
   init: function() {
-    this.setColour(230);
+    this.setColour(190);
     this.appendDummyInput().appendField("Rádio: forçar envio");
     this.setPreviousStatement(true, null);
     this.setNextStatement(true, null);
