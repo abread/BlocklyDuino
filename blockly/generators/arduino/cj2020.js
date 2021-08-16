@@ -156,10 +156,7 @@ public:
 
     Serial.print("saída rádio: ");
     Serial.println((char*) _buffer);
-    if(! _radio.send(RADIO_GROUNDSTATION_NODE_ID, _buffer, _buffer_len)) {
-      Serial.println("Envio falhou, dados em buffer descartados");
-    }
-
+    _radio.send(RADIO_GROUNDSTATION_NODE_ID, _buffer, _buffer_len);
     _buffer_len = 0;
   }
 
