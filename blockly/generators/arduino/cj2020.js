@@ -104,6 +104,45 @@ Blockly.Arduino.cj2020_ds18b20_setResolution = function() {
   return `temperature.setResolution(${res});\n`;
 };
 
+function cj2020_dht11_requirements() {
+  Blockly.Arduino.definitions_['define_cj2020_dht11'] = `
+#include <DHT.h>
+
+#define DHT_PIN 2
+#define DHT_TYPE DHT11
+
+class CJ_DHT {
+private:
+  DHT _sensor = DHT(DHT_PIN, DHT_TYPE);
+
+public:
+  void begin() {
+    _sensor.begin();
+  }
+
+  float readTemperature() {
+    return _sensor.readTemperature(false);
+  }
+
+  float readRelHumidity() {
+    return _sensor.readHumidity();
+  }
+} dht;
+`
+
+  Blockly.Arduino.setups_['setup_cj2020_dht11'] = `dht.begin();\n`;
+}
+
+Blockly.Arduino.cj2020_dht11_readTemperature = function() {
+  cj2020_dht11_requirements();
+  return [`dht.readTemperature()`, Blockly.Arduino.ORDER_ATOMIC]
+}
+
+Blockly.Arduino.cj2020_dht11_readRelHumidity = function() {
+  cj2020_dht11_requirements();
+  return [`dht.readRelHumidity()`, Blockly.Arduino.ORDER_ATOMIC]
+}
+
 Blockly.Arduino.cj2020_bmp180 = function() {
   Blockly.Arduino.definitions_['define_cj2020_bmp180'] = `
 #include <Wire.h>

@@ -64,6 +64,26 @@ Blockly.Blocks['cj2020_ds18b20_setResolution'] = {
   }
 };
 
+Blockly.Blocks['cj2020_dht11_readTemperature'] = {
+  init: function() {
+    this.setColour(230);
+    this.appendDummyInput()
+        .appendField("DHT11: Ler temperatura");
+    this.setOutput(true, 'Number');
+    this.setTooltip('devolve temperatura medida pelo DHT11 em ºC');
+  }
+};
+
+Blockly.Blocks['cj2020_dht11_readRelHumidity'] = {
+  init: function() {
+    this.setColour(230);
+    this.appendDummyInput()
+        .appendField("DHT11: Ler humidade relativa");
+    this.setOutput(true, 'Number');
+    this.setTooltip('devolve humidade relativa medida pelo DHT11 (número entre 0.0 e 1.0)');
+  }
+};
+
 Blockly.Blocks['cj2020_bmp180'] = {
   init: function() {
     this.setColour(230);
