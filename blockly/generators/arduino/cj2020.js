@@ -62,14 +62,14 @@ Blockly.Arduino.cj2020_ds18b20 = function() {
 
 Blockly.Arduino.cj2020_ds18b20_requestTemperatures = function() {
   cj2020_ds18b20_requirements();
-  return [`temperature.requestTemperatures()`, Blockly.Arduino.ORDER_ATOMIC];
+  return `temperature.requestTemperatures();\n`;
 };
 
 Blockly.Arduino.cj2020_ds18b20_getTemperatureForIndex = function() {
   cj2020_ds18b20_requirements();
 
   const idx = this.getFieldValue('INDEX');
-  return `temperature.getTemperatureForIndex(${idx});\n`;
+  return [`temperature.getTemperatureForIndex(${idx})`, Blockly.Arduino.ORDER_ATOMIC];
 };
 
 Blockly.Arduino.cj2020_ds18b20_setResolution = function() {
