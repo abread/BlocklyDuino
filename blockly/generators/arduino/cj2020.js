@@ -2,24 +2,49 @@ goog.provide('Blockly.Arduino.cj2020');
 
 goog.require('Blockly.Arduino');
 
+function cj2020_minmax_macros() {
+  Blockly.Arduino.definitions_['define_minmax_macros'] = `
+#ifndef MIN
+#define MIN(A, B) ((A) < (B) ? (A) : (B))
+#endif
+#ifndef MAX
+#define MAX(A, B) ((A) > (B) ? (A) : (B))
+#endif
+`;
+}
+
 function cj2020_ds18b20_requirements() {
+  cj2020_minmax_macros();
   Blockly.Arduino.definitions_['define_cj2020_ds18b20'] = `
 #include <OneWire.h>
 #include <DallasTemperature.h>
 
 #define TEMPERATURE_PIN 4
+#define DS18B20_MAX_CONVERSION_TIMEOUT 750 /* from library */
 
 class Temperature {
 private:
   OneWire _bus = OneWire(TEMPERATURE_PIN);
   DallasTemperature _sensors = DallasTemperature(&_bus);
-  uint8_t _resolution = 9;
+  unsigned long _lastReq = 0;
+
+  void _blockTillConversionComplete() {
+    if (_lastReq == 0) { // equivalent to completed conversion
+      return;
+    }
+
+    while (!_sensors.isConversionComplete() && (millis() - _lastReq < DS18B20_MAX_CONVERSION_TIMEOUT)) {
+      delay(MIN(1, DS18B20_MAX_CONVERSION_TIMEOUT - (millis() - _lastReq)));
+    }
+
+    _lastReq = 0;
+  }
 
 public:
   void setup() {
     _sensors.begin();
     _sensors.setWaitForConversion(false);
-    _sensors.setResolution(_resolution);
+    _sensors.setResolution(9);
 
     if (_sensors.getDeviceCount() != 1) {
       Serial.print("Detetados ");
@@ -30,15 +55,15 @@ public:
 
   void setResolution(uint8_t res) {
     _sensors.setResolution(res);
-    _resolution = res;
   }
 
   void requestTemperatures() {
     _sensors.requestTemperatures();
+    _lastReq = millis();
   }
 
   double getTemperatureForIndex(uint8_t idx) {
-    _sensors.blockTillConversionComplete(_resolution);
+    _blockTillConversionComplete();
     return _sensors.getTempCByIndex(idx);
   }
 } temperature;
@@ -108,14 +133,8 @@ pressure.setup();
 }
 
 function cj2020_radio_requirements() {
+cj2020_minmax_macros();
 Blockly.Arduino.definitions_['cj2020_radio_define'] = `
-#ifndef MIN
-#define MIN(A, B) ((A) < (B) ? (A) : (B))
-#endif
-#ifndef MAX
-#define MAX(A, B) ((A) > (B) ? (A) : (B))
-#endif
-
 #include <SPIFlash.h>
 #include <RFM69.h>
 #include <RFM69_ATC.h>
