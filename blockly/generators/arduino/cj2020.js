@@ -384,27 +384,6 @@ public:
   size_t write(uint8_t c) {
     return write(&c, 1);
   }
-
-  // safeguard in case people forget to flush
-  size_t println() {
-    size_t ret = Print::println();
-    flush();
-    return ret;
-  }
-
-  template<typename T>
-  size_t println(T a) {
-    size_t ret = Print::println(a);
-    flush();
-    return ret;
-  }
-
-  template<typename T, typename T2>
-  size_t println(T a, T2 b) {
-    size_t ret = Print::println(a, b);
-    flush();
-    return ret;
-  }
 } radio;
 `;
 
