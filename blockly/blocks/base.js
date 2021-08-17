@@ -30,22 +30,6 @@ goog.provide('Blockly.Blocks.base');
 
 goog.require('Blockly.Blocks');
 
-
-Blockly.Blocks['base_delay'] = {
-  helpUrl: 'http://arduino.cc/en/Reference/delay',
-  init: function() {
-    this.setColour(120);
-    this.appendValueInput("DELAY_TIME", 'Number')
-        .appendField("Pausa durante")
-        .setCheck('Number');
-    this.appendDummyInput().appendField('ms');
-    this.setInputsInline(true);
-    this.setPreviousStatement(true, null);
-    this.setNextStatement(true, null);
-    this.setTooltip('Pausa execução durante o tempo especificado (em ms)');
-  }
-};
-
 Blockly.Blocks['base_millis'] = {
   helpUrl: 'http://arduino.cc/en/Reference/millis',
   init: function() {

@@ -2,6 +2,123 @@ goog.provide('Blockly.Blocks.cj2020');
 
 goog.require('Blockly.Blocks');
 
+Blockly.Blocks['base_delay'] = {
+  helpUrl: 'http://arduino.cc/en/Reference/delay',
+  init: function() {
+    this.setColour(120);
+    this.appendValueInput("DELAY_TIME", 'Number')
+        .appendField("Pausa durante")
+        .setCheck('Number');
+    this.appendDummyInput().appendField('ms');
+    this.setInputsInline(true);
+    this.setPreviousStatement(true, null);
+    this.setNextStatement(true, null);
+    this.setTooltip('Pausa execução durante o tempo especificado (em ms)');
+  }
+};
+
+Blockly.Blocks['cj2020_gps_latitude'] = {
+  init: function() {
+    this.setColour(190);
+    this.appendDummyInput()
+        .appendField("GPS: Ler latitude");
+    this.setOutput(true, 'Number');
+    this.setTooltip('devolve última latitude medida (graus)');
+  }
+};
+
+Blockly.Blocks['cj2020_gps_longitude'] = {
+  init: function() {
+    this.setColour(190);
+    this.appendDummyInput()
+        .appendField("GPS: Ler longitude");
+    this.setOutput(true, 'Number');
+    this.setTooltip('devolve última longitude medida (graus)');
+  }
+};
+
+Blockly.Blocks['cj2020_gps_pos_age'] = {
+  init: function() {
+    this.setColour(190);
+    this.appendDummyInput()
+        .appendField("GPS: Ler idade da posição");
+    this.setOutput(true, 'Number');
+    this.setTooltip('devolve instante em que foi recebida a última latitude/longitude do GPS (milissegundos)');
+  }
+};
+
+Blockly.Blocks['cj2020_gps_course'] = {
+  init: function() {
+    this.setColour(190);
+    this.appendDummyInput()
+        .appendField("GPS: Ler direção");
+    this.setOutput(true, 'Number');
+    this.setTooltip('devolve última direção medida (graus)');
+  }
+};
+
+Blockly.Blocks['cj2020_gps_course_age'] = {
+  init: function() {
+    this.setColour(190);
+    this.appendDummyInput()
+        .appendField("GPS: Ler idade da direção");
+    this.setOutput(true, 'Number');
+    this.setTooltip('devolve instante em que foi recebida a última direção do GPS (milissegundos)');
+  }
+};
+
+Blockly.Blocks['cj2020_gps_speed'] = {
+  init: function() {
+    this.setColour(190);
+    this.appendDummyInput()
+        .appendField("GPS: Ler velocidade (m/s)");
+    this.setOutput(true, 'Number');
+    this.setTooltip('devolve última velocidade medida (metros por segundo)');
+  }
+};
+
+Blockly.Blocks['cj2020_gps_speed_age'] = {
+  init: function() {
+    this.setColour(190);
+    this.appendDummyInput()
+        .appendField("GPS: Ler idade da velocidade");
+    this.setOutput(true, 'Number');
+    this.setTooltip('devolve instante em que foi recebida a última velocidade do GPS (milissegundos)');
+  }
+};
+
+Blockly.Blocks['cj2020_gps_altitude'] = {
+  init: function() {
+    this.setColour(190);
+    this.appendDummyInput()
+        .appendField("GPS: Ler altitude (m)");
+    this.setOutput(true, 'Number');
+    this.setTooltip('devolve última altitude medida (metros)');
+  }
+};
+
+Blockly.Blocks['cj2020_gps_altitude_age'] = {
+  init: function() {
+    this.setColour(190);
+    this.appendDummyInput()
+        .appendField("GPS: Ler idade da altitude");
+    this.setOutput(true, 'Number');
+    this.setTooltip('devolve instante em que foi recebida a última altitude do GPS (milissegundos)');
+  }
+};
+
+Blockly.Blocks['cj2020_gps_parse_pending'] = {
+  init: function() {
+    this.setColour(190);
+    this.appendDummyInput()
+        .appendField("GPS: Processar dados pendentes");
+    this.setInputsInline(true);
+    this.setPreviousStatement(true, null);
+    this.setNextStatement(true, null);
+    this.setTooltip('lê e processa informação enviada do GPS (até não haver mais pendente)');
+  }
+};
+
 Blockly.Blocks['cj2020_ds18b20'] = {
   init: function() {
     this.setColour(190);

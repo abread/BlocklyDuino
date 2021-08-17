@@ -2,7 +2,7 @@ goog.provide('Blockly.Arduino.cj2020');
 
 goog.require('Blockly.Arduino');
 
-function cj2020_minmax_macros() {
+function minmax_macros() {
   Blockly.Arduino.definitions_['define_minmax_macros'] = `
 #ifndef MIN
 #define MIN(A, B) ((A) < (B) ? (A) : (B))
@@ -13,8 +13,155 @@ function cj2020_minmax_macros() {
 `;
 }
 
+function xdelay_def() {
+  minmax_macros();
+  Blockly.Arduino.definitions_['aab_xdelay'] = `
+void xdelay(unsigned long d) {
+  unsigned long startTime = millis();
+
+  #ifdef GPS_SERIAL
+  gps.parsePending();
+  #endif
+
+  if (millis() < startTime + d) {
+    delay(MIN(1, millis() - startTime - d));
+  }
+}
+`;
+}
+
+Blockly.Arduino.base_delay = function() {
+  xdelay_def();
+  var delay_time = Blockly.Arduino.valueToCode(this, 'DELAY_TIME', Blockly.Arduino.ORDER_ATOMIC) || '1000'
+  var code = 'xdelay(' + delay_time + ');\n';
+  return code;
+};
+
+function cj2020_gps_requirements() {
+  Blockly.Arduino.definitions_['aaa_cj2020_gps'] = `
+#include <TinyGPS++.h>
+
+#define GPS_SERIAL Serial1
+#define GPS_SERIAL_BAUD 9600
+
+class Gps {
+private:
+  TinyGPSPlus _parser;
+  unsigned long _lastNewMessage = 0;
+public:
+  void setup() {
+    GPS_SERIAL.begin(GPS_SERIAL_BAUD);
+
+    // try to get some info right at the start
+    parsePending();
+    delay(1000);
+    parsePending();
+  }
+
+  void parsePending() {
+    while (GPS_SERIAL.available()) {
+      _parser.encode(GPS_SERIAL.read());
+    }
+  }
+
+  double latitude() {
+    return _parser.location.lat();
+  }
+
+  double longitude() {
+    return _parser.location.lng();
+  }
+
+  unsigned long positionAge() {
+    return _parser.location.age();
+  }
+
+  double courseDeg() {
+    return _parser.course.deg();
+  }
+
+  unsigned long courseAge() {
+    return _parser.course.age();
+  }
+
+  double speedMps() {
+    return _parser.speed.mps();
+  }
+
+  unsigned long speedAge() {
+    return _parser.speed.age();
+  }
+
+  double altitudeMeters() {
+    return _parser.altitude.meters();
+  }
+
+  unsigned long altitudeAge() {
+    return _parser.altitude.age();
+  }
+} gps;
+`
+  xdelay_def();
+
+  Blockly.Arduino.setups_['setup_cj2020_gps'] = `
+gps.setup();
+`
+}
+
+Blockly.Arduino.cj2020_gps_latitude = function() {
+  cj2020_gps_requirements();
+  return [ 'gps.latitude()', Blockly.Arduino.ORDER_ATOMIC ];
+}
+
+Blockly.Arduino.cj2020_gps_longitude = function() {
+  cj2020_gps_requirements();
+  return [ 'gps.longitude()', Blockly.Arduino.ORDER_ATOMIC ];
+}
+
+Blockly.Arduino.cj2020_gps_pos_age = function() {
+  cj2020_gps_requirements();
+  return [ 'gps.positionAge()', Blockly.Arduino.ORDER_ATOMIC ];
+}
+
+Blockly.Arduino.cj2020_gps_course = function() {
+  cj2020_gps_requirements();
+  return [ 'gps.courseDeg()', Blockly.Arduino.ORDER_ATOMIC ];
+}
+
+Blockly.Arduino.cj2020_gps_course_age = function() {
+  cj2020_gps_requirements();
+  return [ 'gps.courseAge()', Blockly.Arduino.ORDER_ATOMIC ];
+}
+
+Blockly.Arduino.cj2020_gps_speed = function() {
+  cj2020_gps_requirements();
+  return [ 'gps.speedMps()', Blockly.Arduino.ORDER_ATOMIC ];
+}
+
+Blockly.Arduino.cj2020_gps_speed_age = function() {
+  cj2020_gps_requirements();
+  return [ 'gps.speedAge()', Blockly.Arduino.ORDER_ATOMIC ];
+}
+
+Blockly.Arduino.cj2020_gps_altitude = function() {
+  cj2020_gps_requirements();
+  return [ 'gps.altitudeMeters()', Blockly.Arduino.ORDER_ATOMIC ];
+}
+
+Blockly.Arduino.cj2020_gps_altitude_age = function() {
+  cj2020_gps_requirements();
+  return [ 'gps.altitudeAge()', Blockly.Arduino.ORDER_ATOMIC ];
+}
+
+Blockly.Arduino.cj2020_gps_parse_pending = function() {
+  cj2020_gps_requirements();
+  return `gps.parsePending();\n`;
+}
+
+
 function cj2020_ds18b20_requirements() {
-  cj2020_minmax_macros();
+  minmax_macros();
+  xdelay_def();
   Blockly.Arduino.definitions_['define_cj2020_ds18b20'] = `
 #include <OneWire.h>
 #include <DallasTemperature.h>
@@ -34,7 +181,7 @@ private:
     }
 
     while (!_sensors.isConversionComplete() && (millis() - _lastReq < DS18B20_MAX_CONVERSION_TIMEOUT)) {
-      delay(MIN(1, DS18B20_MAX_CONVERSION_TIMEOUT - (millis() - _lastReq)));
+      xdelay(MIN(1, DS18B20_MAX_CONVERSION_TIMEOUT - (millis() - _lastReq)));
     }
 
     _lastReq = 0;
@@ -172,8 +319,8 @@ pressure.setup();
 }
 
 function cj2020_radio_requirements() {
-cj2020_minmax_macros();
-Blockly.Arduino.definitions_['cj2020_radio_define'] = `
+  minmax_macros();
+  Blockly.Arduino.definitions_['cj2020_radio_define'] = `
 #include <SPIFlash.h>
 #include <RFM69.h>
 #include <RFM69_ATC.h>
