@@ -224,12 +224,12 @@ temperature.setup();
 Blockly.Arduino.cj2020_ds18b20 = function() {
   cj2020_ds18b20_requirements();
   Blockly.Arduino.definitions_['define_cj2020_ds18b20_legacy'] = `
-    double ds18b20_legacy_read(Temperature& temperature) {
+    double ds18b20_legacy_read() {
       temperature.requestTemperatures();
       return temperature.getTemperatureForIndex(0);
     }
   `;
-  return [`ds18b20_legacy_read(temperature)`, Blockly.Arduino.ORDER_ATOMIC];
+  return [`ds18b20_legacy_read()`, Blockly.Arduino.ORDER_ATOMIC];
 };
 
 Blockly.Arduino.cj2020_ds18b20_requestTemperatures = function() {
