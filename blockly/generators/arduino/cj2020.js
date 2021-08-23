@@ -38,6 +38,10 @@ Blockly.Arduino.base_delay = function() {
 };
 
 function cj2020_gps_requirements() {
+  Blockly.Arduino.setups_['setup_output_6'] = `
+pinMode(6, OUTPUT);
+digitalWrite(6, HIGH);
+`
   Blockly.Arduino.definitions_['aaa_cj2020_gps'] = `
 #include <TinyGPS++.h>
 
