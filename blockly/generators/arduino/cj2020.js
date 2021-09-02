@@ -199,11 +199,9 @@ public:
     _sensors.setWaitForConversion(false);
     _sensors.setResolution(9);
 
-    if (_sensors.getDeviceCount() != 1) {
-      Serial.print("Detetados ");
-      Serial.print(_sensors.getDeviceCount());
-      Serial.println(" sensores de temperatura (em vez de 1). Verifica as tuas ligações.");
-    }
+    Serial.print("Detetados ");
+    Serial.print(_sensors.getDeviceCount());
+    Serial.println(" sensores de temperatura DS18B20");
   }
 
   void setResolution(uint8_t res) {
