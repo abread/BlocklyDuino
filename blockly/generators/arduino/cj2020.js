@@ -13,21 +13,23 @@ function minmax_macros() {
 `;
 }
 
-function xdelay_def() {
+function xdelay_def(has_gps = false) {
   minmax_macros();
-  Blockly.Arduino.definitions_['aab_xdelay'] = `
+
+  if (!Blockly.Arduino.definitions_['aab_xdelay_gps'] || has_gps) {
+    Blockly.Arduino.definitions_['aab_xdelay_gps'] = '/* using GPS */';
+    Blockly.Arduino.definitions_['aab_xdelay'] = `
 void xdelay(unsigned long d) {
   unsigned long startTime = millis();
 
-  #ifdef GPS_SERIAL
-  gps.parsePending();
-  #endif
+  ${has_gps ? 'gps.parsePending();' : ''}
 
   if (millis() < startTime + d) {
     delay(MIN(1, millis() - startTime - d));
   }
 }
 `;
+  }
 }
 
 Blockly.Arduino.base_delay = function() {
@@ -105,7 +107,7 @@ public:
   }
 } gps;
 `
-  xdelay_def();
+  xdelay_def(true);
 
   Blockly.Arduino.setups_['setup_cj2020_gps'] = `
 gps.setup();
