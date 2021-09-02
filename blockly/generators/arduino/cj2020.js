@@ -388,6 +388,23 @@ public:
   size_t write(uint8_t c) {
     return write(&c, 1);
   }
+
+  /* extra decimal places for floating point */
+  size_t print(float f) {
+    return print(f, 5);
+  }
+
+  size_t print(double d) {
+    return print(d, 5);
+  }
+
+  size_t println(float f) {
+    return print(f, 5);
+  }
+
+  size_t println(double d) {
+    return print(d, 5);
+  }
 } radio;
 `;
 
