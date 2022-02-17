@@ -365,7 +365,8 @@ public:
     }
 
     Serial.print("saída rádio: ");
-    Serial.println((char*) _buffer);
+    Serial.write(_buffer, _buffer_len);
+    Serial.println();
     _radio.send(RADIO_GROUNDSTATION_NODE_ID, _buffer, _buffer_len);
     _buffer_len = 0;
   }
