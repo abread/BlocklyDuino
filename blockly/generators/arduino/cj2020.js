@@ -371,7 +371,7 @@ public:
     _buffer_len = 0;
   }
 
-  size_t write(uint8_t* payload, int len) {
+  size_t write(uint8_t const* payload, int len) {
     int i = 0;
     while (i < len) {
       if (buffer_space() == 0) {
@@ -388,24 +388,20 @@ public:
   }
 
   size_t write(uint8_t c) {
-    return write(&c, 1);
+    return StreamedRFM::write(&c, 1);
+  }
+
+  int availableForWrite() {
+    return buffer_space();
   }
 
   /* extra decimal places for floating point */
-  size_t print(float f) {
-    return print(f, 5);
+  size_t print(double d, int n = 5) {
+    return Print::print(d, n);
   }
 
-  size_t print(double d) {
-    return print(d, 5);
-  }
-
-  size_t println(float f) {
-    return print(f, 5);
-  }
-
-  size_t println(double d) {
-    return print(d, 5);
+  size_t println(double d, int n = 5) {
+    return Print::println(d, n);
   }
 } radio;
 `;
