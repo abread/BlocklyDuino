@@ -22,7 +22,8 @@ function xdelay_def(has_gps = false) {
 void xdelay(unsigned long d) {
   unsigned long startTime = millis();
 
-  ${has_gps ? 'gps.parsePending();' : ''}
+  // parse pending gps data
+  ${has_gps ? 'gps.parsePending();' : '// no gps present'}
 
   if (millis() < startTime + d) {
     delay(MIN(1, millis() - startTime - d));
