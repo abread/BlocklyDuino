@@ -419,8 +419,8 @@ Blockly.Arduino.cj2020_radio_setfreq = function() {
 Blockly.Arduino.cj2020_radio_print = function() {
   cj2020_radio_requirements();
 
-  const content = Blockly.Arduino.valueToCode(this, 'CONTENT', Blockly.Arduino.ORDER_ATOMIC) || 'ERRO A OBTER VALOR';
-  return `radio.print(${content});\n`;
+  const content = Blockly.Arduino.valueToCode(this, 'CONTENT', Blockly.Arduino.ORDER_ATOMIC);
+  return `radio.print(${content || ''});\n`;
 };
 
 Blockly.Arduino.cj2020_radio_println = function() {
