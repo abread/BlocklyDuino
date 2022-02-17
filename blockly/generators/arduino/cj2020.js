@@ -331,7 +331,7 @@ function cj2020_radio_requirements() {
 #include <RFM69_ATC.h>
 
 #define RADIO_SS_PIN 10
-#define RADIO_IRQ_PIN 5
+#define RADIO_IRQ_PIN 3
 #define RADIO_NET_ID 100 // 0-255, must be the same on all nodes
 #define RADIO_NODE_ID 2 // 0-254, must be unique in network, 255=broadcast
 #define RADIO_GROUNDSTATION_NODE_ID 1 // same as above, the ground station
