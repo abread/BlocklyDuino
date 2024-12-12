@@ -76,7 +76,7 @@ var profile = {
     description: "Arduino Nano (Kit CanSat)",
     digital: [["0", "0"], ["1", "1"], ["2", "2"], ["5", "5"], ["6", "6"], ["7", "7"], ["8", "8"], ["9", "9"], ["A0", "A0"], ["A1", "A1"], ["A2", "A2"], ["A3", "A3"], ["A6", "A6"], ["A7", "A7"]],
     analog: [["A0", "A0"], ["A1", "A1"], ["A2", "A2"], ["A3", "A3"], ["A6", "A6"], ["A7", "A7"]],
-    serial: 115200
+    serial: 19200
   },
 };
 //set default profile to arduino standard-compatible board

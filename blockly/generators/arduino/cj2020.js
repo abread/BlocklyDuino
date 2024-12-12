@@ -2,54 +2,37 @@ goog.provide('Blockly.Arduino.cj2020');
 
 goog.require('Blockly.Arduino');
 
-function minmax_macros() {
-  Blockly.Arduino.definitions_['define_minmax_macros'] = `
-#ifndef MIN
-#define MIN(A, B) ((A) < (B) ? (A) : (B))
-#endif
-#ifndef MAX
-#define MAX(A, B) ((A) > (B) ? (A) : (B))
-#endif
-`;
-}
-
-function xdelay_def(has_gps = false) {
-  minmax_macros();
-
-  if (!Blockly.Arduino.definitions_['aab_xdelay_gps'] || has_gps) {
-    Blockly.Arduino.definitions_['aab_xdelay_gps'] = '/* using GPS */';
-    Blockly.Arduino.definitions_['aab_xdelay'] = `
-void xdelay(unsigned long d) {
-  unsigned long startTime = millis();
-
-  // parse pending gps data
-  ${has_gps ? 'gps.parsePending();' : '// no gps present'}
-
-  if (millis() < startTime + d) {
-    delay(MIN(1, millis() - startTime - d));
-  }
-}
+function cjkit_include() {
+  if (!Blockly.Arduino.definitions_['include_cjkit']) {
+    Blockly.Arduino.definitions_['include_cjkit'] = `
+#define CJKIT_VERSION 2
+#include <CJKit.h>
 `;
   }
 }
 
 Blockly.Arduino.base_delay = function() {
-  xdelay_def();
+  cjkit_include();
   var delay_time = Blockly.Arduino.valueToCode(this, 'DELAY_TIME', Blockly.Arduino.ORDER_ATOMIC) || '1000'
-  var code = 'xdelay(' + delay_time + ');\n';
+  var code = 'CJKit::xdelay(' + delay_time + ');\n';
   return code;
 };
 
 function cj2020_gps_requirements() {
+  cjkit_include();
   Blockly.Arduino.setups_['setup_output_6'] = `
+#if CJKIT_VERSION < 2
 pinMode(6, OUTPUT);
 digitalWrite(6, HIGH);
-`
+#endif
+`;
+
+  // TODO: update
   Blockly.Arduino.definitions_['aaa_cj2020_gps'] = `
 #include <TinyGPS++.h>
 
-#define GPS_SERIAL Serial1
-#define GPS_SERIAL_BAUD 9600
+#define GPS_SERIAL CJKit::GPS_SERIAL
+#define GPS_SERIAL_BAUD CJKit::GPS_BAUD_RATE
 
 class Gps {
 private:
@@ -108,7 +91,6 @@ public:
   }
 } gps;
 `
-  xdelay_def(true);
 
   Blockly.Arduino.setups_['setup_cj2020_gps'] = `
 gps.setup();
@@ -167,71 +149,31 @@ Blockly.Arduino.cj2020_gps_parse_pending = function() {
 
 
 function cj2020_ds18b20_requirements() {
-  minmax_macros();
-  xdelay_def();
+  cjkit_include();
   Blockly.Arduino.definitions_['define_cj2020_ds18b20'] = `
-#include <OneWire.h>
-#include <DallasTemperature.h>
-
-#define TEMPERATURE_PIN 4
-#define DS18B20_MAX_CONVERSION_TIMEOUT 750 /* from library */
-
-class Temperature {
-private:
-  OneWire _bus = OneWire(TEMPERATURE_PIN);
-  DallasTemperature _sensors = DallasTemperature(&_bus);
-  unsigned long _lastReq = 0;
-
-  void _blockTillConversionComplete() {
-    if (_lastReq == 0) { // equivalent to completed conversion
-      return;
-    }
-
-    while (!_sensors.isConversionComplete() && (millis() - _lastReq < DS18B20_MAX_CONVERSION_TIMEOUT)) {
-      xdelay(MIN(1, DS18B20_MAX_CONVERSION_TIMEOUT - (millis() - _lastReq)));
-    }
-
-    _lastReq = 0;
-  }
-
-public:
-  void setup() {
-    _sensors.begin();
-    _sensors.setWaitForConversion(false);
-    _sensors.setResolution(9);
-
-    Serial.print("Detetados ");
-    Serial.print(_sensors.getDeviceCount());
-    Serial.println(" sensores de temperatura DS18B20");
-  }
-
-  void setResolution(uint8_t res) {
-    _sensors.setResolution(res);
-  }
-
-  void requestTemperatures() {
-    _sensors.requestTemperatures();
-    _lastReq = millis();
-  }
-
-  double getTemperatureForIndex(uint8_t idx) {
-    _blockTillConversionComplete();
-    return _sensors.getTempCByIndex(idx);
-  }
-} temperature;
+CJKit::TemperatureSensorBus temperatureBus;
 `;
 
   Blockly.Arduino.setups_['setup_cj2020_ds18b20'] = `
-temperature.setup();
-`
+  temperatureBus.begin();
+  {
+    uint8_t devCount = temperatureBus.deviceCount();
+    Serial.print("temperatura: detetados ");
+    Serial.print(devCount);
+    Serial.println(" sensores ligados.");
+    if (devCount == 0) {
+      Serial.println("temperatura: provável FALHA na inicialização");
+    }
+  }
+`;
 }
 
 Blockly.Arduino.cj2020_ds18b20 = function() {
   cj2020_ds18b20_requirements();
   Blockly.Arduino.definitions_['define_cj2020_ds18b20_legacy'] = `
     double ds18b20_legacy_read() {
-      temperature.requestTemperatures();
-      return temperature.getTemperatureForIndex(0);
+      temperatureBus.requestTemperatures();
+      return temperatureBus.readTemperatureCForIndex(0);
     }
   `;
   return [`ds18b20_legacy_read()`, Blockly.Arduino.ORDER_ATOMIC];
@@ -239,21 +181,21 @@ Blockly.Arduino.cj2020_ds18b20 = function() {
 
 Blockly.Arduino.cj2020_ds18b20_requestTemperatures = function() {
   cj2020_ds18b20_requirements();
-  return `temperature.requestTemperatures();\n`;
+  return `temperatureBus.requestTemperatures();\n`;
 };
 
 Blockly.Arduino.cj2020_ds18b20_getTemperatureForIndex = function() {
   cj2020_ds18b20_requirements();
 
   const idx = this.getFieldValue('INDEX');
-  return [`temperature.getTemperatureForIndex(${idx})`, Blockly.Arduino.ORDER_ATOMIC];
+  return [`temperatureBus.readTemperatureCForIndex(${idx})`, Blockly.Arduino.ORDER_ATOMIC];
 };
 
 Blockly.Arduino.cj2020_ds18b20_setResolution = function() {
   cj2020_ds18b20_requirements();
 
   const res = this.getFieldValue('RESOLUTION');
-  return `temperature.setResolution(${res});\n`;
+  return `temperatureBus.setResolution(${res});\n`;
 };
 
 function cj2020_dht11_requirements() {
@@ -295,137 +237,47 @@ Blockly.Arduino.cj2020_dht11_readRelHumidity = function() {
   return [`dht.readRelHumidity()`, Blockly.Arduino.ORDER_ATOMIC]
 }
 
-Blockly.Arduino.cj2020_bmp180 = function() {
+function cj2020_bmp180_requirements() {
+  cjkit_include();
   Blockly.Arduino.definitions_['define_cj2020_bmp180'] = `
-#include <Wire.h>
-#include <Adafruit_BMP085.h>
-class Pressure {
-  Adafruit_BMP085 _bmp;
-
-public:
-  void setup() {
-    if (!_bmp.begin()) {
-      Serial.println("Sensor de pressão não encontrado. Verifica as tuas ligações.");
-    }
-  }
-
-  double read() {
-    _bmp.readTemperature(); // won't work without it, TODO: check if library takes care of this for us
-    return _bmp.readPressure();
-  }
-} pressure;
+CJKit::Pressure pressure;
 `;
 
   Blockly.Arduino.setups_['setup_cj2020_bmp180'] = `
-pressure.setup();
-`
+  if (!pressure.begin()) {
+    Serial.println("pressão: FALHA na inicialização");
+  }
+`;
+}
 
-  return [`pressure.read()`, Blockly.Arduino.ORDER_ATOMIC];
+Blockly.Arduino.cj2020_bmp180 = function() {
+  cj2020_bmp180_requirements();
+  return [`pressure.readPressurePa()`, Blockly.Arduino.ORDER_ATOMIC];
+}
+
+Blockly.Arduino.cj2020_bmp180_temperature = function() {
+  cj2020_bmp180_requirements();
+  return [`pressure.readTemperatureC()`, Blockly.Arduino.ORDER_ATOMIC];
 }
 
 function cj2020_radio_requirements() {
-  minmax_macros();
+  cjkit_include();
   Blockly.Arduino.definitions_['cj2020_radio_define'] = `
-#include <SPIFlash.h>
-#include <RFM69.h>
-#include <RFM69_ATC.h>
-
-#define RADIO_SS_PIN 10
-#define RADIO_IRQ_PIN 3
-#define RADIO_NET_ID 100 // 0-255, must be the same on all nodes
-#define RADIO_NODE_ID 2 // 0-254, must be unique in network, 255=broadcast
-#define RADIO_GROUNDSTATION_NODE_ID 1 // same as above, the ground station
-#define RADIO_ATC_RSSI -80
-#define RADIO_MAX_BUFFER_SIZE 61 // library limitation
-class StreamedRFM : public Print {
-  RFM69_ATC _radio = RFM69_ATC(RADIO_SS_PIN, RADIO_IRQ_PIN);
-  uint8_t _buffer[RADIO_MAX_BUFFER_SIZE] = {0};
-  uint8_t _buffer_len = 0;
-
-public:
-  void setup() {
-    // Radio
-    _radio.initialize(RF69_433MHZ, RADIO_NODE_ID, RADIO_NET_ID);
-    _radio.setHighPower();
-    _radio.encrypt(null);
-    _radio.enableAutoPower(RADIO_ATC_RSSI);
-  }
-
-  void setFrequency(uint32_t freq) {
-    _radio.setFrequency(freq);
-  }
-
-  int buffer_space() {
-    return RADIO_MAX_BUFFER_SIZE - _buffer_len;
-  }
-
-  void flush() {
-    if (_buffer_len == 0) {
-      return;
-    }
-
-    Serial.print("saída rádio: ");
-    Serial.write(_buffer, _buffer_len);
-    Serial.println();
-    _radio.send(RADIO_GROUNDSTATION_NODE_ID, _buffer, _buffer_len);
-    _buffer_len = 0;
-  }
-
-  size_t write(uint8_t const* payload, int len) {
-    int i = 0;
-    while (i < len) {
-      if (buffer_space() == 0) {
-        flush();
-      }
-
-      int sz = MIN(buffer_space(), len - i);
-      memcpy(_buffer+_buffer_len, payload+i, sz);
-      i += sz;
-      _buffer_len += sz;
-    }
-
-    return len;
-  }
-
-  size_t write(uint8_t c) {
-    return StreamedRFM::write(&c, 1);
-  }
-
-  int availableForWrite() {
-    return buffer_space();
-  }
-
-  // extra decimal places for floating point
-  // the next definitions will shadow Print::print and Print::println, bring them to the derived class
-  using Print::print;
-  using Print::println;
-
-  size_t print(double d, int n = 5) {
-    return Print::print(d, n);
-  }
-
-  size_t println(double d, int n = 5) {
-    return Print::println(d, n);
-  }
-
-  size_t print(float f, int n = 5) {
-    return Print::print(f, n);
-  }
-
-  size_t println(float f, int n = 5) {
-    return Print::println(f, n);
-  }
-} radio;
+CJKit::StreamedRadio<> radio;
 `;
 
-  Blockly.Arduino.setups_['cj2020_radio_setup'] = 'radio.setup();\n';
+  Blockly.Arduino.setups_['cj2020_radio_setup'] = `
+  if (!radio.begin()) {
+    Serial.println("rádio: FALHA na inicialização");
+  }
+`;
 }
 
 Blockly.Arduino.cj2020_radio_setfreq = function() {
   cj2020_radio_requirements();
 
   const freq = this.getFieldValue('FREQ');
-  return `radio.setFrequency(${freq});\n`
+  return `radio.setFrequency(${freq});\n`;
 }
 
 Blockly.Arduino.cj2020_radio_print = function() {

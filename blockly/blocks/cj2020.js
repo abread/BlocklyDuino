@@ -160,7 +160,7 @@ Blockly.Blocks['cj2020_ds18b20_getTemperatureForIndex'] = {
   init: function() {
     this.setColour(190);
     this.appendDummyInput()
-        .appendField("DS18B20: Obter temperatura do sensor #")
+        .appendField("DS18B20: Ler temperatura (ºC) do sensor #")
         .appendField(new Blockly.FieldTextInput("0", idx_validator), "INDEX");
     this.setOutput(true, 'Number');
     this.setTooltip('devolve temperatura em ºC');
@@ -205,9 +205,19 @@ Blockly.Blocks['cj2020_bmp180'] = {
   init: function() {
     this.setColour(190);
     this.appendDummyInput()
-        .appendField("BMP180: Ler pressão");
+        .appendField("BMP180: Ler pressão (Pa)");
     this.setOutput(true, 'Number');
     this.setTooltip('devolve pressão em Pa');
+  }
+};
+
+Blockly.Blocks['cj2020_bmp180_temperature'] = {
+  init: function() {
+    this.setColour(190);
+    this.appendDummyInput()
+        .appendField("BMP180: Ler temperatura (ºC)");
+    this.setOutput(true, 'Number');
+    this.setTooltip('devolve temperatura em ºC');
   }
 };
 
